@@ -4,6 +4,20 @@ from ClientStates.WaitForReplyState import WaitForReplyState
 from ClientStates.DisplayReplyState import DisplayReplyState
 from threading import Thread
 
+"""
+    Client is a class that has the following goals:
+        -Receive a packets from a PacketManager and send the packets to the server
+        -Receive packets from the server and forward them for display
+    
+    
+    The Client implements the State design pattern and runs on a separate thread.
+    Note:
+        The client runs in a infinite state loop and it can stop for 2 reasons:
+            1)The server doesn't respond
+            2)The UI has been closed by the user (Don't let this thread run is the UI is closed).
+"""
+
+
 class Client(Thread):
     def __init__(self):
         Thread.__init__(self)

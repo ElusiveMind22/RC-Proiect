@@ -1,3 +1,10 @@
+"""
+    In this state the Client sent to the UI manager the data that
+    needs to be displayed to the user, after the state changes to
+    the first state(WaitForConfigState)
+"""
+
+
 class DisplayReplyState:
     def __init__(self, client):
         self.client = client
