@@ -1,7 +1,8 @@
-import re,uuid,sys
+import re, uuid, sys
 import random
 from Package import Package
 from PyQt5.QtWidgets import QApplication, QLabel
+
 '''
 print(':'.join(re.findall('..','%012x' %int(uuid.getnode()<<8))))
 #print(len(uuid.getnode()))
@@ -10,10 +11,10 @@ print(sys.getsizeof(uuid.getnode()<<16))
 h=[0x00000000]
 print(24*h)
 '''
-#pack=Package()
-#pack.printPack()
+# pack=Package()
+# pack.printPack()
 
-#print(f"{[random.randint(0, 0xFF) for _ in range(0,4)]}")
+# print(f"{[random.randint(0, 0xFF) for _ in range(0,4)]}")
 '''
 mac=uuid.getnode()
 mac_bytes = []
@@ -28,11 +29,10 @@ print(f"{bytes(mac_bytes)}")
 print(f"{bytes([0xff,0x12,0x3])}")
 print(f"{bytes([random.randint(0, 0xFF) for _ in range(0, 4)])}")
 '''
-#packet=bytes([0xff,0x12,0x3])
-#print(len(packet))
+# packet=bytes([0xff,0x12,0x3])
+# print(len(packet))
 
-app=QApplication([])
-label=QLabel("it works")
+app = QApplication([])
+label = QLabel("it works")
 label.show()
 app.exec_()
-
