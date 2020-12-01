@@ -31,8 +31,14 @@ print(f"{bytes([random.randint(0, 0xFF) for _ in range(0, 4)])}")
 '''
 # packet=bytes([0xff,0x12,0x3])
 # print(len(packet))
-
+'''
 app = QApplication([])
 label = QLabel("it works")
 label.show()
 app.exec_()
+'''
+
+strings=[]
+strings.append("unu")
+strings.append("doi")
+print(strings)

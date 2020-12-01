@@ -19,10 +19,24 @@ class UIManager:
         self.rbutton3 = QtWidgets.QRadioButton(self.win)
 
         # Options you can set
+        # Discover options
+        self.parameter_list = QtWidgets.QCheckBox("Parameter List", self.win)
+        self.discoverParameters = [QtWidgets.QCheckBox("Subnet Mask", self.win),
+                                   QtWidgets.QCheckBox("Router", self.win),
+                                   QtWidgets.QCheckBox("Domain Name", self.win),
+                                   QtWidgets.QCheckBox("Domain Name Server", self.win),
+                                   QtWidgets.QCheckBox("Time Offset", self.win),
+                                   QtWidgets.QCheckBox("Time Server", self.win),
+                                   QtWidgets.QCheckBox("Lease Time", self.win)]
+
         self.discoverOptions = [QtWidgets.QCheckBox("IP Address", self.win),
-                                QtWidgets.QCheckBox("Parameter List", self.win)]
-        self.requestOptions = [QtWidgets.QCheckBox("IP Addr.", self.win),
+                                self.parameter_list]
+
+        # Request Options
+        self.requestOptions = [QtWidgets.QCheckBox("IP Address", self.win),
                                QtWidgets.QCheckBox("DHCP Server", self.win)]
+
+        # Decline Options
         self.declineOptions = [QtWidgets.QCheckBox("Declined IP Address", self.win), ]
 
         # send button
@@ -30,9 +44,10 @@ class UIManager:
 
         # text box for input
         self.textBoxIP = QtWidgets.QLineEdit(self.win)
+        self.textBoxIP2 = QtWidgets.QLineEdit(self.win)
 
         # text edit, used to display text, so it's only for output
-        self.display=QtWidgets.QTextEdit(self.win)
+        self.display = QtWidgets.QTextEdit(self.win)
 
         self.__Config()
 
@@ -71,6 +86,8 @@ class UIManager:
 
         self.display.setReadOnly(True)
 
+        self.parameter_list.toggled.connect(self.__parameterRequestList)
+
         # set the positions for options
         xpos = 200
         ypos = 50
@@ -79,6 +96,9 @@ class UIManager:
         heigth = 30
         for i in range(0, len(self.discoverOptions)):
             self.discoverOptions[i].setGeometry(xpos, ypos + i * yscale, width, heigth)
+        for i in range(0, len(self.discoverParameters)):
+            self.discoverParameters[i].setGeometry(xpos, ypos + (i + len(self.discoverOptions)) * yscale, width, heigth)
+            self.discoverParameters[i].setHidden(True)
         for i in range(0, len(self.requestOptions)):
             self.requestOptions[i].setGeometry(xpos, ypos + i * yscale, width, heigth)
             self.requestOptions[i].setHidden(True)
@@ -87,18 +107,31 @@ class UIManager:
             self.declineOptions[i].setHidden(True)
 
         # text boxes should be configured here
-        self.textBoxIP.setGeometry(xpos+width, ypos, width, heigth)
-        self.textBoxIP.setHidden(True)
+        self.textBoxIP.setGeometry(xpos + width, ypos, width, heigth)
+        self.textBoxIP.setHidden(False)
+        self.textBoxIP2.setGeometry(xpos + width, ypos + yscale, width, heigth)
+        self.textBoxIP2.setHidden(True)
 
     def __onDiscover(self):
         if self.rbutton1.isChecked():
             print("Discover was clicked")
             for i in range(0, len(self.discoverOptions)):
                 self.discoverOptions[i].setHidden(False)
+            self.textBoxIP.setHidden(False)
         else:
             for i in range(0, len(self.discoverOptions)):
                 self.discoverOptions[i].setHidden(True)
                 self.discoverOptions[i].setChecked(False)
+            self.textBoxIP.setHidden(True)
+            self.textBoxIP.setText("")
+
+    def __parameterRequestList(self):
+        if self.parameter_list.isChecked():
+            for i in range(0, len(self.discoverParameters)):
+                self.discoverParameters[i].setHidden(False)
+        else:
+            for i in range(0, len(self.discoverParameters)):
+                self.discoverParameters[i].setHidden(True)
 
     def __onRequest(self):
         if self.rbutton2.isChecked():
@@ -106,16 +139,20 @@ class UIManager:
             for i in range(0, len(self.requestOptions)):
                 self.requestOptions[i].setHidden(False)
             self.textBoxIP.setHidden(False)
+            self.textBoxIP2.setHidden(False)
         else:
             for i in range(0, len(self.requestOptions)):
                 self.requestOptions[i].setHidden(True)
                 self.requestOptions[i].setChecked(False)
             self.textBoxIP.setHidden(True)
             self.textBoxIP.setText("")
+            self.textBoxIP2.setHidden(True)
+            self.textBoxIP2.setText("")
 
     def __onDecline(self):
         if self.rbutton3.isChecked():
             print("Decline was clicked")
+            '''
             for i in range(0, len(self.declineOptions)):
                 self.declineOptions[i].setHidden(False)
             self.textBoxIP.setHidden(False)
@@ -125,18 +162,45 @@ class UIManager:
                 self.declineOptions[i].setChecked(False)
             self.textBoxIP.setHidden(True)
             self.textBoxIP.setText("")
+            '''
+
     def __onSend(self):
         print("Package sent!")
         # TO_DO
         # when you press the send button:
         #   you must consider the case where you send
-        # a packet and wait for the reply but the user wants
+        # a packet and wait for the reply, but the user wants
         # to send another packet
         #   you must read the options selected
         # and send those options to a Packet manager
         #   as soon as you send something you should
         # disable the send button from being used,
         # only the Packet manager can enable the button again
+        options = []
+
+        # You must know how the options are related
+        # Do not modify the order
+        if self.rbutton1.isChecked():
+            options.append("53 1")
+            for i in range(0, len(self.discoverOptions)):
+                if self.discoverOptions[i].isChecked():
+                    if self.discoverOptions[i].text() == "IP Address":  # Ip Requested
+                        options.append(f"50 {self.textBoxIP.text()}")
+
+        if self.rbutton2.isChecked():
+            options.append("53 3")
+            for i in range(0, len(self.requestOptions)):
+                if self.requestOptions[i].isChecked():
+                    if self.requestOptions[i].text() == "IP Address":  # Ip Request
+                        options.append(f"50 {self.textBoxIP.text()}")
+
+                    if self.requestOptions[i].text() == "DHCP Server":  # Ip Request
+                        options.append(f"54 {self.textBoxIP2.text()}")
+
+        if self.rbutton3.isChecked():
+            options.append("53 4")
+
+        print(options)
 
     def startUI(self):
         self.win.show()
