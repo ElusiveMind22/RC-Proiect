@@ -2,6 +2,7 @@ import re, uuid, sys
 import random
 from Package import Package
 from PyQt5.QtWidgets import QApplication, QLabel
+from struct import *
 
 '''
 print(':'.join(re.findall('..','%012x' %int(uuid.getnode()<<8))))
@@ -38,7 +39,8 @@ label.show()
 app.exec_()
 '''
 
-strings=[]
-strings.append("unu")
-strings.append("doi")
-print(strings)
+var1=pack('BB', 1,2)
+var1=[]
+var1=var1+[1,2,3]
+var1=var1+[4,5,6]
+print("192.168.100.1".split("."))

@@ -26,8 +26,7 @@ class UIManager:
                                    QtWidgets.QCheckBox("Domain Name", self.win),
                                    QtWidgets.QCheckBox("Domain Name Server", self.win),
                                    QtWidgets.QCheckBox("Time Offset", self.win),
-                                   QtWidgets.QCheckBox("Time Server", self.win),
-                                   QtWidgets.QCheckBox("Lease Time", self.win)]
+                                   QtWidgets.QCheckBox("Time Server", self.win)]
 
         self.discoverOptions = [QtWidgets.QCheckBox("IP Address", self.win),
                                 self.parameter_list]
@@ -186,6 +185,23 @@ class UIManager:
                 if self.discoverOptions[i].isChecked():
                     if self.discoverOptions[i].text() == "IP Address":  # Ip Requested
                         options.append(f"50 {self.textBoxIP.text()}")
+                    if self.discoverOptions[i].text() =="Parameter List":
+                        param="50 "
+                        for j in range(0,len(self.discoverParameters)):
+                            if self.discoverParameters[j].isChecked():
+                                if self.discoverParameters[j].text()=="Subnet Mask":
+                                    param=param+"1 "
+                                if self.discoverParameters[j].text()=="Router":
+                                    param=param+"3 "
+                                if self.discoverParameters[j].text()=="Domain Name":
+                                    param=param+"15 "
+                                if self.discoverParameters[j].text()=="Domain Name Server":
+                                    param=param+"6 "
+                                if self.discoverParameters[j].text()=="Time Offset":
+                                    param=param+"2 "
+                                if self.discoverParameters[j].text()=="Time Server":
+                                    param=param+"4 "
+                        options.append(param)
 
         if self.rbutton2.isChecked():
             options.append("53 3")
