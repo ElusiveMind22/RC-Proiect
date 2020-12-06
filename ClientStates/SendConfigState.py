@@ -11,4 +11,5 @@ class SendConfigState:
     def start(self):
         # TO_DO
         # send the data to an address
+        print(self.client.package.OPTIONS)
         self.client.current_state = 2

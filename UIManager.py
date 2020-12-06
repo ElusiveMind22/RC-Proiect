@@ -48,11 +48,15 @@ class UIManager:
         # text edit, used to display text, so it's only for output
         self.display = QtWidgets.QTextEdit(self.win)
 
+        #self.enable_send = True
+
         self.__Config()
 
     def __Config(self):
         self.win.setGeometry(0, 0, 1200, 600)
         self.win.setWindowTitle("DHCP Client")
+
+        self.display.setText("simplu mesaj\n...")
 
         label1 = QtWidgets.QLabel(self.win)
         label1.setText("Message type:")
@@ -186,7 +190,7 @@ class UIManager:
                     if self.discoverOptions[i].text() == "IP Address":  # Ip Requested
                         options.append(f"50 {self.textBoxIP.text()}")
                     if self.discoverOptions[i].text() =="Parameter List":
-                        param="50 "
+                        param="55 "
                         for j in range(0,len(self.discoverParameters)):
                             if self.discoverParameters[j].isChecked():
                                 if self.discoverParameters[j].text()=="Subnet Mask":
@@ -216,7 +220,16 @@ class UIManager:
         if self.rbutton3.isChecked():
             options.append("53 4")
 
-        print(options)
+        print("UI Result: ", options)
+        # you can't send another message until you receive a reply
+        self.sendButton.setHidden(True)
+
+        self.pack_manager.convertToPackets(options)
+
+
+
+    def setPacketManager(self, pack_manager):
+        self.pack_manager = pack_manager
 
     def startUI(self):
         self.win.show()

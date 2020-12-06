@@ -14,4 +14,5 @@ class WaitForConfigState:
         while True:
             if self.client.config_ready:
                 break
+        self.client.config_ready = False
         self.client.current_state = 1

@@ -12,4 +12,5 @@ class DisplayReplyState:
     def start(self):
         # TO_DO
         # data will be extracted from the packet and then sent to the UI for display
+        print("Displaying the reply")
         self.client.current_state = 0

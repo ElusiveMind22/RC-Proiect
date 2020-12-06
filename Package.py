@@ -45,6 +45,43 @@ class Package:
               f"CIADDR: {self.CIADDR}\nYADDR: {self.YADDR}\nSIADDR: {self.SIADDR}\nGIADDR: {self.GIADDR}\nCHADDR: {self.CHADDR}\nSNAME: {self.SNAME}\n"
               f"FILE: {self.FILE}\nOPTIONS: {self.OPTIONS}")
 
+    def __str__(self):
+        result = ""
+        result = result + f"OP: {int(self.OP)}\n"
+        result = result + f"HTYPE: {int(self.HTYPE)}\n"
+        result = result + f"HLEN: {int(self.HLEN)}\n"
+        result = result + f"HOPS: {int(self.HOPS)}\n"
+
+        result = result + f"XID: {self.XID}\n"
+
+        result = result + f"SECS: {self.SECS}\n"
+        result = result + f"FLAGS: {self.FLAGS}\n"
+
+        result = result + "CIADDR: "
+        for i in range(0, len(self.CIADDR)):
+            result = result+f"{int(self.CIADDR)} "
+
+        result = result + f"\nYADDR: "
+        for i in range(0, len(self.YADDR)):
+            result = result+f"{int(self.YADDR)} "
+
+        result = result + f"\nSIADDR: "
+        for i in range(0, len(self.SIADDR)):
+            result = result+f"{int(self.SIADDR)} "
+
+        result = result + f"\nGIADDR: "
+        for i in range(0, len(self.GIADDR)):
+            result = result+f"{int(self.GIADDR)}"
+
+        result = result + f"\nCHADDR: "
+        for i in range(0, len(self.CHADDR)):
+            result = result+f"{int(self.CHADDR)} "
+
+        # You need to translate the options from hexa to string
+        result = result + "\nOPTIONS: "
+
+
+
     # when you receive a packet from the socket you set it as the new content
     # this means that you update the fields
     def setData(self, new_pack):

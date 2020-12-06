@@ -14,4 +14,5 @@ class WaitForReplyState:
     def start(self):
         # TO_DO
         # wait for reply and save the packet
+        print("Waiting for reply")
         self.client.current_state = 3

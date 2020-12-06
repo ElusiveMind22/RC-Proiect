@@ -2,6 +2,7 @@ from ClientStates.WaitForConfigState import WaitForConfigState
 from ClientStates.SendConfigState import SendConfigState
 from ClientStates.WaitForReplyState import WaitForReplyState
 from ClientStates.DisplayReplyState import DisplayReplyState
+from Package import Package
 from threading import Thread
 
 """
@@ -26,6 +27,10 @@ class Client(Thread):
         self.current_state = 0
         self.config_ready = False  # this flags the packet as being ready to send and is set from the UI callback
         self.reply_received = False  # this flags the receiving of a packet and is set from the WaitForReplyState
+        self.package = Package()
+
+    def setPackage(self, package):
+        self.package = package
 
     def run(self):
         while True:

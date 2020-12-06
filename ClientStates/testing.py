@@ -39,8 +39,32 @@ label.show()
 app.exec_()
 '''
 
+class Man:
+    def __init__(self,leg):
+        self.leg=leg
+    def __str__(self):
+        return "John Wayne"
+
+class Leg:
+    def __init__(self):
+        print("leg created")
+
+    def setMan(self,man):
+        self.man=man
+
+    def __str__(self):
+        return self.man.__str__()
+
+
+leg=Leg()
+man=Man(leg)
+leg.setMan(man)
+print(leg)
+
 var1=pack('BB', 1,2)
 var1=[]
 var1=var1+[1,2,3]
 var1=var1+[4,5,6]
-print("192.168.100.1".split("."))
+res=bytes([int(number) for number in "192.168.101.1".split(".")])
+print(res)
+print(len(res))
