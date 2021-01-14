@@ -1,70 +1,35 @@
-import re, uuid, sys
-import random
-from Package import Package
-from PyQt5.QtWidgets import QApplication, QLabel
-from struct import *
+# send a preconfigured dhcp discover and display the offer
+from Package import *
+import socket
+SERVER_PORT=67
+CLIENT_PORT=68
+CLIENT_IP='0.0.0.0'
+MAX_BYTES=1024
+DESTINATION=('<broadcast>',SERVER_PORT)
+SOURCE=(CLIENT_IP,5050)
 
-'''
-print(':'.join(re.findall('..','%012x' %int(uuid.getnode()<<8))))
-#print(len(uuid.getnode()))
+inputs=socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 
-print(sys.getsizeof(uuid.getnode()<<16))
-h=[0x00000000]
-print(24*h)
-'''
-# pack=Package()
-# pack.printPack()
+#inputs.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+inputs.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+inputs.bind(('', CLIENT_PORT))
+inputs.settimeout(5)
 
-# print(f"{[random.randint(0, 0xFF) for _ in range(0,4)]}")
-'''
-mac=uuid.getnode()
-mac_bytes = []
-for _ in range(0,6):
-    mac_bytes.append(mac % 0x100)
-    mac=int(mac/0x100)
-print(hex(uuid.getnode()))
-mac_bytes=(list(reversed(mac_bytes)))
-for _ in range(0,10):
-    mac_bytes.append(0x00)
-print(f"{bytes(mac_bytes)}")
-print(f"{bytes([0xff,0x12,0x3])}")
-print(f"{bytes([random.randint(0, 0xFF) for _ in range(0, 4)])}")
-'''
-# packet=bytes([0xff,0x12,0x3])
-# print(len(packet))
-'''
-app = QApplication([])
-label = QLabel("it works")
-label.show()
-app.exec_()
-'''
+client=socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+client.settimeout(5)
+client.bind(SOURCE)
 
-class Man:
-    def __init__(self,leg):
-        self.leg=leg
-    def __str__(self):
-        return "John Wayne"
+packet=Package()
+packet.OPTIONS=bytes([53,1,1, 50,4,192,168,1,100, 55,4,1,3,15,6,255])
 
-class Leg:
-    def __init__(self):
-        print("leg created")
-
-    def setMan(self,man):
-        self.man=man
-
-    def __str__(self):
-        return self.man.__str__()
+print("Packet will be sent!")
+bytes_to_send=packet.getContent()
+client.sendto(bytes_to_send,DESTINATION)
+print("Waiting for a response")
+server_reply=inputs.recvfrom(MAX_BYTES)
+print("Reply Received")
+print(server_reply)
 
 
-leg=Leg()
-man=Man(leg)
-leg.setMan(man)
-print(leg)
-
-var1=pack('BB', 1,2)
-var1=[]
-var1=var1+[1,2,3]
-var1=var1+[4,5,6]
-res=bytes([int(number) for number in "192.168.101.1".split(".")])
-print(res)
-print(len(res))
