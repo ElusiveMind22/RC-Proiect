@@ -45,5 +45,7 @@ class PacketManager:
 
         # return bytes(options_pack)
 
+    # this method converts the bytes of the package into
+    # human readable data
     def convertToDisplay(self, byte_string_package):
         packet_rcv = Package().setData(byte_string_package)
