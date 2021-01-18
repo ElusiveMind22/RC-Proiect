@@ -4,6 +4,7 @@ from ClientStates.WaitForReplyState import WaitForReplyState
 from ClientStates.DisplayReplyState import DisplayReplyState
 from Package import Package
 from threading import Thread
+import socket
 
 """
     Client is a class that has the following goals:
@@ -28,11 +29,26 @@ class Client(Thread):
         self.config_ready = False  # this flags the packet as being ready to send and is set from the UI callback
         self.reply_received = False  # this flags the receiving of a packet and is set from the WaitForReplyState
         self.package = Package()
+        self.received_bytes=bytes([0x00]) # this is the variable that holds the server reply
+        self.keep_running=True
+
+        # Creating the socket
+        self.CLIENT_PORT = 68
+        self.SERVER_PORT = 67
+        self.MAX_BYTES = 1024
+        self.DESTINATION = ('<broadcast>', self.SERVER_PORT)
+        self.socket_cl=socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        self.socket_cl.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.socket_cl.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket_cl.bind(('', self.CLIENT_PORT))
+        self.socket_cl.settimeout(5)
+    def setPacketManager(self, packet_manager):
+        self.packet_manager=packet_manager
 
     def setPackage(self, package):
         self.package = package
 
     def run(self):
-        while True:
+        while self.keep_running:
             print(f"Client's current state {self.current_state}")
             self.state[self.current_state].start()
