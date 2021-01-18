@@ -17,7 +17,9 @@ def main():
     ui=UIManager()
     pack_man = PacketManager(ui, client)
     ui.setPacketManager(pack_man)
+    client.setPacketManager(pack_man)
     client.start()
     ui.startUI()
+    print("Initialization ended")
 
 main()
