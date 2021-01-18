@@ -15,7 +15,7 @@ class Package:
         self.HOPS = bytes([0x00])  # used by relay agents
         self.XID = bytes([random.randint(0, 0xFF) for _ in range(0, 4)])  # transaction id
         self.SECS = bytes([0x00, 0x00])  # seconds elapsed since client began address acquisition or renewal precess
-        self.FLAGS = bytes([0x00, 0x00])
+        self.FLAGS = bytes([0x80, 0x00])
         self.CIADDR = bytes([0x00, 0x00, 0x00, 0x00])  # client's ip address
         self.YADDR = bytes([0x00, 0x00, 0x00, 0x00])  # 'your'(client) ip address offered by the server
         self.SIADDR = bytes([0x00, 0x00, 0x00, 0x00])  # server's ip address
@@ -63,23 +63,23 @@ class Package:
 
         result = result + "CIADDR: "
         for i in range(0, len(self.CIADDR)):
-            result = result + f"{(self.CIADDR)} "
+            result = result + f"{(self.CIADDR[i])} "
 
         result = result + f"\nYADDR: "
         for i in range(0, len(self.YADDR)):
-            result = result + f"{(self.YADDR)} "
+            result = result + f"{(self.YADDR[i])} "
 
         result = result + f"\nSIADDR: "
         for i in range(0, len(self.SIADDR)):
-            result = result + f"{(self.SIADDR)} "
+            result = result + f"{(self.SIADDR[i])} "
 
         result = result + f"\nGIADDR: "
         for i in range(0, len(self.GIADDR)):
-            result = result + f"{(self.GIADDR)}"
+            result = result + f"{(self.GIADDR[i])}"
 
         result = result + f"\nCHADDR: "
         for i in range(0, len(self.CHADDR)):
-            result = result + f"{(self.CHADDR)} "
+            result = result + f"{(self.CHADDR[i])} "
 
         # You need to translate the options from hexa to string
         result = result + "\nOPTIONS:\n"
@@ -88,6 +88,9 @@ class Package:
         # CODE[1] LEN[1] DATA[LEN]
         # The following piece of code is supposed to iterate trough the bytes in the option field
         # and translate them into human readable information
+        # things i can decode:
+        # subnet mask; router; IP lease time; DHCP server; DNS; domain name; time offset;
+        # time server;
         index=0
         while index < len(self.OPTIONS):
             # i always starts on the CODE position
@@ -114,14 +117,14 @@ class Package:
             elif self.OPTIONS[index]==51:
                 value=self.OPTIONS[index+2]*(256^3)+self.OPTIONS[index+3]*(256^2)\
                       +self.OPTIONS[index+4]*256 +self.OPTIONS[index+5]
-                result=result+f"IP address lease time: {value}"
+                result=result+f"IP address lease time: {value}\n"
                 index+=6
             elif self.OPTIONS[index]== 54:
                 result = result + f"DHCP server: {self.OPTIONS[index + 2]}.{self.OPTIONS[index + 3]}" \
                                   f".{self.OPTIONS[index + 4]}.{self.OPTIONS[index + 5]}\n"
                 index += 6
             elif self.OPTIONS[index]==6:
-                result=result+"Domain Name Server:\n"
+                result=result+"Domain Name Server:"
                 index+=1
                 length=self.OPTIONS[index]
                 index+=1
@@ -153,6 +156,8 @@ class Package:
                                       f".{self.OPTIONS[index + 2]}.{self.OPTIONS[index + 3]}\n"
                     index += 4
                 index+=1
+            elif self.OPTIONS[index]==0 or self.OPTIONS[index]==255:
+                break
             else:
                 print(f"Unknown  Option {self.OPTIONS[index]}\n")
         return result
@@ -160,6 +165,7 @@ class Package:
     # when you receive a packet from the socket you set it as the new content
     # this means that you update the fields
     def setData(self, new_pack):
+        #check if this is correct
         self.OP = bytes([new_pack[0]])  # message code
         self.HTYPE = bytes([new_pack[1]])  # hardware address type
         self.HLEN = bytes([new_pack[2]])  # hardware address length
@@ -170,7 +176,7 @@ class Package:
         self.FLAGS = bytes([new_pack[10], new_pack[11]])
         self.CIADDR = bytes([new_pack[i] for i in range(12, 16)])  # client's ip address
         self.YADDR = bytes([new_pack[i] for i in range(16, 20)])  # 'your'(client) ip address offered by the server
-        self.SIADDR = bytes([new_pack[i] for i in range(20, 14)])  # server's ip address
+        self.SIADDR = bytes([new_pack[i] for i in range(20, 24)])  # server's ip address
         self.GIADDR = bytes([new_pack[i] for i in range(24, 28)])  # relay agent ip address
 
-        self.OPTIONS = bytes([new_pack[i] for i in range(236, len(new_pack))])  # dhcp options field( To be completed)
+        self.OPTIONS = bytes([new_pack[i] for i in range(240, len(new_pack))])  # dhcp options field( To be completed)
