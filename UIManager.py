@@ -2,16 +2,30 @@ import threading
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
+from Package import *
 
 """
     This class creates the UI
 """
 
 
+# what i am doing here should be illegal
+class MyWindow(QMainWindow):
+    def __init__(self):
+        QMainWindow.__init__(self)
+
+    def setPacketMan(self, pack_man):
+        self.pack_man = pack_man
+
+    def closeEvent(self, event):
+        self.pack_man.client.keep_running = False
+        print("Client Has Stopped\n")
+
+
 class UIManager:
     def __init__(self):
         self.app = QApplication(sys.argv)
-        self.win = QMainWindow()
+        self.win = MyWindow()
 
         # the 3 radio buttons Discover, Request, Decline
         self.rbutton1 = QtWidgets.QRadioButton(self.win)
@@ -40,6 +54,7 @@ class UIManager:
 
         # send button
         self.sendButton = QtWidgets.QPushButton("Send", self.win)
+        self.viewButton = QtWidgets.QPushButton("View Data", self.win)
 
         # text box for input
         self.textBoxIP = QtWidgets.QLineEdit(self.win)
@@ -48,7 +63,7 @@ class UIManager:
         # text edit, used to display text, so it's only for output
         self.display = QtWidgets.QTextEdit(self.win)
 
-        #self.enable_send = True
+        # self.enable_send = True
 
         self.__Config()
 
@@ -84,6 +99,10 @@ class UIManager:
 
         self.sendButton.setGeometry(1120, 550, 70, 40)
         self.sendButton.clicked.connect(self.__onSend)
+
+        self.viewButton.setGeometry(1120, 550, 70, 40)
+        self.viewButton.clicked.connect(self.__onView)
+        self.viewButton.setHidden(True)
 
         self.display.setGeometry(750, 10, 440, 540)
 
@@ -188,23 +207,33 @@ class UIManager:
             for i in range(0, len(self.discoverOptions)):
                 if self.discoverOptions[i].isChecked():
                     if self.discoverOptions[i].text() == "IP Address":  # Ip Requested
-                        options.append(f"50 {self.textBoxIP.text()}")
-                    if self.discoverOptions[i].text() =="Parameter List":
-                        param="55 "
-                        for j in range(0,len(self.discoverParameters)):
+                        if len(self.textBoxIP.text())>0:
+                            options.append(f"50 {self.textBoxIP.text()}")
+                        else:
+                            ip_addr="192.168.100.24" # just a fail safe
+                            try:
+                                with open("IP_History", 'r') as file:
+                                    ip_addr = file.readline()
+
+                            except:
+                                print("there's a problem with the file")
+                            options.append(f"50 {ip_addr}")
+                    if self.discoverOptions[i].text() == "Parameter List":
+                        param = "55 "
+                        for j in range(0, len(self.discoverParameters)):
                             if self.discoverParameters[j].isChecked():
-                                if self.discoverParameters[j].text()=="Subnet Mask":
-                                    param=param+"1 "
-                                if self.discoverParameters[j].text()=="Router":
-                                    param=param+"3 "
-                                if self.discoverParameters[j].text()=="Domain Name":
-                                    param=param+"15 "
-                                if self.discoverParameters[j].text()=="Domain Name Server":
-                                    param=param+"6 "
-                                if self.discoverParameters[j].text()=="Time Offset":
-                                    param=param+"2 "
-                                if self.discoverParameters[j].text()=="Time Server":
-                                    param=param+"4 "
+                                if self.discoverParameters[j].text() == "Subnet Mask":
+                                    param = param + "1 "
+                                if self.discoverParameters[j].text() == "Router":
+                                    param = param + "3 "
+                                if self.discoverParameters[j].text() == "Domain Name":
+                                    param = param + "15 "
+                                if self.discoverParameters[j].text() == "Domain Name Server":
+                                    param = param + "6 "
+                                if self.discoverParameters[j].text() == "Time Offset":
+                                    param = param + "2 "
+                                if self.discoverParameters[j].text() == "Time Server":
+                                    param = param + "4 "
                         options.append(param)
 
         if self.rbutton2.isChecked():
@@ -223,14 +252,23 @@ class UIManager:
         print("UI Result: ", options)
         # you can't send another message until you receive a reply
         self.sendButton.setHidden(True)
-
+        # self.viewButton.setHidden(False)
         self.pack_manager.convertToPackets(options)
 
-
+    def __onView(self):
+        # get the packet content from the client
+        bt = self.pack_manager.client.received_bytes
+        pack = Package()
+        pack.setData(bt)
+        self.display.setText(str(pack))
+        self.viewButton.setHidden(True)
+        self.sendButton.setHidden(False)
 
     def setPacketManager(self, pack_manager):
         self.pack_manager = pack_manager
+        self.win.setPacketMan(pack_manager)
 
     def startUI(self):
         self.win.show()
         sys.exit(self.app.exec_())
+        # client stop
