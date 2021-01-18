@@ -1,3 +1,5 @@
+from Client import *
+from Package import *
 """
     In this state the Client waits for the reply(from the server).
     If a certain amount of time passes and the server doesn't answer
@@ -15,4 +17,9 @@ class WaitForReplyState:
         # TO_DO
         # wait for reply and save the packet
         print("Waiting for reply")
+        try:
+            server_reply, addr = self.client.socket_cl.recvfrom(self.client.MAX_BYTES)
+            self.client.received_bytes=server_reply
+        except:
+            print("Waiting for a reply timed out\n")
         self.client.current_state = 3
