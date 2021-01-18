@@ -11,7 +11,7 @@ class WaitForConfigState:
         self.client = client
 
     def start(self):
-        while True:
+        while self.client.keep_running:
             if self.client.config_ready:
                 break
         self.client.config_ready = False
