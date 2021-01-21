@@ -63,13 +63,14 @@ with open("IP_History", 'w') as file:
 
 
 # sending a dhcp request
-'''
+
 packet.OP=bytes([0x01])
 packet.CIADDR = packet.YADDR
 packet.YADDR=bytes([0x00,0x00,0x00,0x00])
 # I can get an ACK message when i use the address that the server assigned me
 # I can force a NAK message when i use a bad address like 192.168.100.1
-packet.OPTIONS=bytes([53,1,3, 50,4,192,168,100,25, 54,4,192,168,100,1])
+packet.OPTIONS=bytes([53,1,3, 50,4,packet.CIADDR[0],packet.CIADDR[1],packet.CIADDR[2],packet.CIADDR[3]
+                         , 54,4,192,168,100,1])
 bytes_to_send=packet.getContent()
 inputs.sendto(bytes_to_send,DESTINATION)
 print("Waiting for a response")
@@ -77,17 +78,17 @@ server_reply, addr =inputs.recvfrom(MAX_BYTES)
 packet.setData(server_reply)
 print("Reply Received")
 print(str(packet))
-'''
+
 
 #sending a dhcp release
-'''
+
 packet.OP=bytes([0x01])
 packet.YADDR=bytes([0x00,0x00,0x00,0x00])
-packet.OPTIONS=bytes([53,1,7])
+packet.OPTIONS=bytes([53,1,7,255])
 bytes_to_send=packet.getContent()
 inputs.sendto(bytes_to_send,DESTINATION)
 # there will be no reply from the server
-'''
+
 
 #dhcp inform
 '''
