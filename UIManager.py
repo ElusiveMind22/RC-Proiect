@@ -31,6 +31,7 @@ class UIManager:
         self.rbutton1 = QtWidgets.QRadioButton(self.win)
         self.rbutton2 = QtWidgets.QRadioButton(self.win)
         self.rbutton3 = QtWidgets.QRadioButton(self.win)
+        self.rbutton4 = QtWidgets.QRadioButton(self.win)
 
         # Options you can set
         # Discover options
@@ -81,7 +82,7 @@ class UIManager:
         label2.setText("DCHP Options:")
         label2.setGeometry(200, 10, 100, 30)
 
-        self.rbutton1.setGeometry(10, 50, 70, 30)
+        self.rbutton1.setGeometry(10, 50, 90, 30)
         self.rbutton1.setObjectName("Discover")
         self.rbutton1.setText("Discover")
         self.rbutton1.toggled.connect(self.__onDiscover)
@@ -96,6 +97,11 @@ class UIManager:
         self.rbutton3.setObjectName("Decline")
         self.rbutton3.setText("Decline")
         self.rbutton3.toggled.connect(self.__onDecline)
+
+        self.rbutton4.setGeometry(10, 170, 70, 30)
+        self.rbutton4.setObjectName("Release")
+        self.rbutton4.setText("Release")
+        self.rbutton4.toggled.connect(self.__onRelease)
 
         self.sendButton.setGeometry(1120, 550, 70, 40)
         self.sendButton.clicked.connect(self.__onSend)
@@ -185,6 +191,8 @@ class UIManager:
             self.textBoxIP.setHidden(True)
             self.textBoxIP.setText("")
             '''
+    def __onRelease(self):
+        pass
 
     def __onSend(self):
         print("Package sent!")
@@ -248,6 +256,8 @@ class UIManager:
 
         if self.rbutton3.isChecked():
             options.append("53 4")
+        if self.rbutton4.isChecked():
+            options.append("53 7")
 
         print("UI Result: ", options)
         # you can't send another message until you receive a reply
