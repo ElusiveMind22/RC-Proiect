@@ -14,8 +14,8 @@ inputs=socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 inputs.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 inputs.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-#inputs.bind(('192.168.100.17', CLIENT_PORT))
-inputs.bind(('', CLIENT_PORT))
+
+inputs.bind(('192.168.1.101', CLIENT_PORT))
 inputs.settimeout(5)
 
 #client=socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)

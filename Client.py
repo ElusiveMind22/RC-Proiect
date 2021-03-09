@@ -40,7 +40,7 @@ class Client(Thread):
         self.socket_cl=socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         self.socket_cl.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         self.socket_cl.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket_cl.bind(('', self.CLIENT_PORT))
+        self.socket_cl.bind(('192.168.1.101', self.CLIENT_PORT))
         self.socket_cl.settimeout(5)
     def setPacketManager(self, packet_manager):
         self.packet_manager=packet_manager
